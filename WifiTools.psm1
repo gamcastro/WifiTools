@@ -30,7 +30,7 @@ function Restart-WifiAdapter {
 
         Start-Sleep -Seconds 3
 
-        Write-Verbose "Conectando na rede wi-fi aparecida"
+        Write-Verbose "Conectando na rede wi-fi $SSID"
         Connect-WiFiProfile -ProfileName $SSID
 
 
