@@ -32,7 +32,36 @@ function Restart-WifiAdapter {
 
         Write-Verbose "Conectando na rede wi-fi $SSID"
         Connect-WiFiProfile -ProfileName $SSID
+        Start-Sleep -Seconds 3
+        $wifiinfo = netsh WLAN show interface Wi-Fi 
+        
+        
+       try{
+            $canal = ($wifiinfo | Select-String -Pattern 'Canal').Line
+            $canal = $canal.Substring($canal.Length - 2,2).Trim()
+    
+            $estado = ($wifiinfo | Select-String -Patter 'Estado').Line        
+            $estado = $estado.Substring(($estado.IndexOf(':') + 1),($estado.Length - $estado.IndexOf(':'))-1).Trim()
+    
+            $sinal = ($wifiinfo | Select-String -Pattern 'Sinal').Line
+            $sinal = $sinal.Substring(($sinal.IndexOf(':') + 1),($sinal.Length - $sinal.IndexOf(':'))-1).Trim()
+    
+            $descricao = ($wifiinfo | Select-String -Pattern 'Descr').Line
+                       $descricao = $descricao.Substring(($descricao.IndexOf(':') + 1),($descricao.Length - $descricao.IndexOf(':'))-1).Trim()
+    
+            $props = @{'Adaptador' = $descricao
+                      'Canal'=$canal
+                       'Estado'=$estado
+                        'Sinal'=$sinal}
+    
+            $obj = New-Object -TypeName psobject -Property $props
+            Write-Output $obj
+        }
+       catch {
+           Write-Warning "Erro ao obter informacoes sobre o adaptador wifi"
+        }
 
+       
 
     }
     END{}
