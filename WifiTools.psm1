@@ -9,30 +9,41 @@ function Restart-WifiAdapter {
     .PARAMETER SSID
     Nome da rede wifi que se quer conectar
 
+    .PARAMETER SECONDS
+    Quantidade em segundos para aguardar em acoes internas do comando.
+    O valor em segundos deve ser entre 1 e 10.
+
     .EXAMPLE
     Restart-WifiAdapter
     Esse comando ira resetar o adaptador wifi e conectar a rede wifi padrao
 
+    .EXAMPLE
+    Restart-WifiAdapter -SSID RedeWifi -Seconds 8
+    Esse comando irá resetar o adaptador wifi e conectar na rede wifi 'RedeWifi' aguardando 8 segundos nas acoes internas do comando
+
     #>
     [CmdletBinding()]
-    param(
-        [string]$SSID = 'Aparecida2.4G_extendida'
+    param(                        
+        [string]$SSID = 'Aparecida2.4G_extendida',
+
+        [ValidateRange(1,10)]
+        [int]$Seconds = 3
     )
     BEGIN{}
     PROCESS{
         Write-Verbose 'Desabilitando a conexão wifi'
         Disable-NetAdapter -Name "Wi-fi" -Confirm:$false
 
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds $Seconds
 
         Write-Verbose "Habilitando a conexão wifi de volta"
         Enable-NetAdapter -Name "Wi-fi"
 
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds $Seconds
 
         Write-Verbose "Conectando na rede wi-fi $SSID"
         Connect-WiFiProfile -ProfileName $SSID
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds $Seconds
         $wifiinfo = netsh WLAN show interface Wi-Fi 
         
         
